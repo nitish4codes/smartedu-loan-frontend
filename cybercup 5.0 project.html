@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>SmartEdu Loan Portal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; font-family: 'Roboto', sans-serif; margin: 0; padding: 0; }
+    body {
+      background: linear-gradient(120deg, #f0f4f8, #DAA425);
+      display: flex; justify-content: center; align-items: center;
+      min-height: 100vh; padding: 20px;
+    }
+    .card { background: #fff; border-radius: 20px; box-shadow: 0 16px 40px rgba(0,0,0,0.12);
+           width: 100%; max-width: 950px; padding: 40px; }
+    h1 { text-align: center; color:#003366; font-size:2rem; margin-bottom:6px; font-weight:700; }
+    p.small { text-align:center; color:#555; margin-bottom:22px; }
+    .progress-bar { display:flex; gap:12px; justify-content:space-between; margin: 18px 0 26px; list-style:none; padding:0; }
+    .progress-bar li { flex:1; text-align:center; color:#bbb; font-weight:500; position:relative; }
+    .progress-bar li::before { content:counter(step); counter-increment:step; display:block; width:30px; height:30px; line-height:30px; margin:0 auto 8px; border-radius:50%; background:#bbb; color:#fff; }
+    .progress-bar li.active { color:#0073e6; } .progress-bar li.active::before { background:#0073e6; }
+    form { display:flex; flex-direction:column; gap:24px; }
+    .section { display:none; padding:20px; border-radius:12px; background:#f8fafc; box-shadow: inset 0 0 6px rgba(0,0,0,0.02); }
+    .section.active { display:block; }
+    .section h2 { margin:0 0 14px; color:#003366; font-size:1.15rem; font-weight:600; border-bottom:1px solid #e1e8ef; padding-bottom:10px; }
+    .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap:14px; }
+    .form-group { position:relative; margin-top:10px; }
+    .form-group input, .form-group select, .form-group textarea {
+      width:100%; padding:12px 10px; border-radius:8px; border:1px solid #cfd8e3; background:#fff; font-size:1rem;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline:none; border-color:#0073e6; box-shadow:0 0 8px rgba(0,115,230,0.15); }
+    .form-group label { position:absolute; left:10px; top:10px; background:#f8fafc; padding:0 6px; color:#666; pointer-events:none; transition: all .18s; font-size:0.95rem; }
+    .form-group input:placeholder-shown + label { top:10px; font-size:0.95rem; }
+    .form-group input:not(:placeholder-shown) + label,
+    .form-group textarea:not(:placeholder-shown) + label,
+    .form-group select:not(:placeholder-shown) + label {
+      top:-10px; font-size:0.78rem; color:#0073e6;
+    }
+    textarea { min-height:86px; resize:vertical; }
+    .error { color:#bf2e2e; font-size:0.85rem; margin-top:6px; display:none; }
+    .controls { display:flex; justify-content:space-between; gap:12px; margin-top:16px; align-items:center; }
+    .btn { background:#0073e6; color:#fff; padding:12px 18px; border: none; border-radius:10px; cursor:pointer; font-weight:600; }
+    .btn.secondary { background:#fff; color:#003366; border:1px solid #cbd6e9; }
+    .btn:disabled { opacity:0.55; cursor:not-allowed; transform:none; }
+    @media (max-width:600px) { .controls { flex-direction:column-reverse; } .btn { width:100%; } .card { padding:20px; } }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Education Loan Application</h1>
+    <p class="small">AI-driven fraud detection active — your inputs are validated for better processing.</p>
+
+    <ul class="progress-bar" aria-hidden="true">
+      <li class="active">Basic</li>
+      <li>Documents</li>
+      <li>Verification</li>
+    </ul>
+
+    <form id="loanForm" novalidate>
+      <!-- STEP 1 -->
+      <section id="step1" class="section active" aria-labelledby="basic-heading">
+        <h2 id="basic-heading">Basic Details</h2>
+        <div class="grid">
+          <div>
+            <div class="form-group">
+              <input id="name" name="name" type="text" placeholder=" " autocomplete="name" required
+                     pattern="^[A-Za-z.\-'\s]{2,100}$" maxlength="100" />
+              <label for="name">Full Name</label>
+              <div class="error" id="err-name">Please enter a valid name (letters, spaces only).</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="form-group">
+              <input id="age" name="age" type="number" placeholder=" " required min="16" max="100" />
+              <label for="age">Age</label>
+              <div class="error" id="err-age">Enter age between 16 and 100.</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="form-group">
+              <input id="course" name="course" type="text" placeholder=" " maxlength="80" />
+              <label for="course">Course</label>
+              <div class="error" id="err-course"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="form-group">
+              <input id="institute" name="institute" type="text" placeholder=" " maxlength="100" />
+              <label for="institute">Institute</label>
+              <div class="error" id="err-institute"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="form-group">
+              <select id="semester" name="semester" placeholder=" " required>
+                <option value="" disabled selected></option>
+                <option value="1">1st</option><option value="2">2nd</option><option value="3">3rd</option>
+                <option value="4">4th</option><option value="5">5th</option><option value="6">6th</option>
+                <option value="7">7th</option><option value="8">8th</option>
+              </select>
+              <label for="semester">Semester</label>
+              <div class="error" id="err-semester">Please select semester.</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="form-group">
+              <input id="cgpa" name="cgpa" type="number" placeholder=" " step="0.01" min="0" max="10" />
+              <label for="cgpa">CGPA (0.00 - 10.00)</label>
+              <div class="error" id="err-cgpa">Enter CGPA between 0.00 and 10.00.</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="form-group">
+              <input id="email" name="email" type="email" placeholder=" " autocomplete="email" required />
+              <label for="email">Email</label>
+              <div class="error" id="err-email">Enter a valid email address.</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="form-group">
+              <input id="phone" name="phone" type="tel" placeholder=" " required
+                     pattern="^(\+91[\-\s]?)?[6-9]\d{9}$" maxlength="13" />
+              <label for="phone">Phone (10 digits)</label>
+              <div class="error" id="err-phone">Enter a valid Indian phone (10 digits, optional +91).</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="controls">
+          <div></div>
+          <button type="button" class="btn" id="next1" disabled>Next →</button>
+        </div>
+      </section>
+
+      <!-- STEP 2 -->
+      <section id="step2" class="section" aria-labelledby="docs-heading">
+        <h2 id="docs-heading">Documents & Previous Loans</h2>
+
+        <div class="grid">
+          <div>
+            <div class="form-group">
+              <input id="loan_amount" name="loan_amount" type="number" placeholder=" " min="1000" max="5000000" required />
+              <label for="loan_amount">Loan Amount (₹)</label>
+              <div class="error" id="err-loan">Enter amount between ₹1,000 and ₹5,000,000.</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="form-group">
+              <input id="prev_apps" name="prev_apps" type="number" placeholder=" " min="0" step="1" value="0" required />
+              <label for="prev_apps">Previous Applications Count</label>
+              <div class="error" id="err-prev_apps">Enter 0 or more.</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="form-group">
+              <input id="prev_loan_ids" name="prev_loan_ids" type="text" placeholder=" " maxlength="250"
+                     pattern="^([\w\-\/]+(\s*)?)(,([\s]*)?[\w\-\/]+(\s*)?)*$" />
+              <label for="prev_loan_ids">Previous Loan Application Numbers (comma-separated)</label>
+              <div class="error" id="err-prev_loan_ids">Use comma-separated alphanumeric IDs (e.g. APP123, APP-124).</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="form-group">
+              <input id="docs_score" name="docs_score" type="number" placeholder=" " step="0.01" min="0" max="1" required />
+              <label for="docs_score">Document Confidence (0.00 - 1.00)</label>
+              <div class="error" id="err-docs_score">Enter a score between 0.00 and 1.00</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="form-group">
+              <input id="aadhar" name="aadhar" type="text" placeholder=" " inputmode="numeric" maxlength="12"
+                     pattern="^\d{12}$" />
+              <label for="aadhar">Aadhaar (12 digits — demo)</label>
+              <div class="error" id="err-aadhar">Aadhaar must be exactly 12 digits.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button type="button" class="btn secondary" id="prev2">← Back</button>
+          <button type="button" class="btn" id="next2" disabled>Next →</button>
+        </div>
+      </section>
+
+      <!-- STEP 3 -->
+      <section id="step3" class="section" aria-labelledby="verify-heading">
+        <h2 id="verify-heading">Verification & Review</h2>
+
+        <div class="grid">
+          <div>
+            <div class="form-group">
+              <input id="guardian_name" name="guardian_name" type="text" placeholder=" " maxlength="100" />
+              <label for="guardian_name">Guardian Name</label>
+              <div class="error" id="err-guardian_name">Please enter a valid name (letters only).</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="form-group">
+              <input id="guardian_phone" name="guardian_phone" type="tel" placeholder=" " pattern="^(\+91[\-\s]?)?[6-9]\d{9}$" maxlength="13" />
+              <label for="guardian_phone">Guardian Phone</label>
+              <div class="error" id="err-guardian_phone">Enter valid phone (10 digits, optional +91).</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="form-group">
+              <input id="guardian_relation" name="guardian_relation" type="text" placeholder=" " maxlength="40" />
+              <label for="guardian_relation">Relation</label>
+              <div class="error" id="err-guardian_relation"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="form-group">
+              <input id="bank_name" name="bank_name" type="text" placeholder=" " maxlength="80" />
+              <label for="bank_name">Bank Name</label>
+              <div class="error" id="err-bank_name"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="form-group">
+              <input id="ifsc" name="ifsc" type="text" placeholder=" " maxlength="11" pattern="^[A-Za-z]{4}0[A-Za-z0-9]{6}$" />
+              <label for="ifsc">IFSC Code (11 chars)</label>
+              <div class="error" id="err-ifsc">IFSC must match format: 4 letters + 0 + 6 alphanumeric (e.g. SBIN0001234).</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="form-group">
+              <input id="account_no" name="account_no" type="text" placeholder=" " inputmode="numeric" maxlength="18" pattern="^\d{9,18}$" />
+              <label for="account_no">Account Number (9–18 digits)</label>
+              <div class="error" id="err-account_no">Enter 9–18 digits for account number.</div>
+            </div>
+          </div>
+
+          <div style="grid-column: 1 / -1;">
+            <div class="form-group">
+              <textarea id="purpose" name="purpose" placeholder=" " maxlength="700"></textarea>
+              <label for="purpose">Purpose of Loan</label>
+              <div class="error" id="err-purpose"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button type="button" class="btn secondary" id="prev3">← Back</button>
+          <button type="submit" class="btn" id="submitBtn">Submit Application</button>
+        </div>
+      </section>
+    </form>
+
+    <div id="result" aria-live="polite" style="display:none; margin-top:16px; padding:12px; border-radius:8px; background:#e6fff7; color:#026a3b;"></div>
+  </div>
+
+  <script>
+    // Helper: query and show/hide error
+    function showError(id, message) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (message) {
+        el.textContent = message;
+        el.style.display = 'block';
+      } else {
+        el.style.display = 'none';
+      }
+    }
+
+    // field validators map: returns boolean
+    const validators = {
+      name: v => /^[A-Za-z.\-'\s]{2,100}$/.test(v.trim()),
+      age: v => { const n = Number(v); return Number.isInteger(n) && n >=16 && n <=100; },
+      semester: v => !!v,
+      cgpa: v => v === '' || (!isNaN(v) && Number(v) >=0 && Number(v) <=10),
+      email: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),
+      phone: v => /^(\+91[\-\s]?)?[6-9]\d{9}$/.test(v.trim()),
+      loan_amount: v => { const n=Number(v); return !isNaN(n) && n>=1000 && n<=5000000; },
+      prev_apps: v => { const n=Number(v); return Number.isInteger(n) && n>=0; },
+      prev_loan_ids: v => v.trim()==='' || /^([\w\-\/]+(\s*)?)(,([\s]*)?[\w\-\/]+(\s*)?)*$/.test(v.trim()),
+      docs_score: v => { const n=Number(v); return !isNaN(n) && n>=0 && n<=1; },
+      aadhar: v => v.trim()==='' || /^\d{12}$/.test(v.trim()),
+      guardian_name: v => v.trim()==='' || /^[A-Za-z.\-'\s]{2,100}$/.test(v.trim()),
+      guardian_phone: v => v.trim()==='' || /^(\+91[\-\s]?)?[6-9]\d{9}$/.test(v.trim()),
+      ifsc: v => v.trim()==='' || /^[A-Za-z]{4}0[A-Za-z0-9]{6}$/.test(v.trim()),
+      account_no: v => v.trim()==='' || /^\d{9,18}$/.test(v.trim())
+    };
+
+    // fields that are required for step 1 and step 2
+    const step1Required = ['name','age','semester','email','phone'];
+    const step2Required = ['loan_amount','prev_apps','docs_score'];
+
+    // wire up elements
+    const step1El = document.getElementById('step1');
+    const step2El = document.getElementById('step2');
+    const step3El = document.getElementById('step3');
+    const next1 = document.getElementById('next1');
+    const next2 = document.getElementById('next2');
+    const prev2 = document.getElementById('prev2');
+    const prev3 = document.getElementById('prev3');
+    const submitBtn = document.getElementById('submitBtn');
+    const progressItems = document.querySelectorAll('.progress-bar li');
+    const resultBox = document.getElementById('result');
+
+    function updateProgress(step) {
+      progressItems.forEach((li, idx) => li.classList.toggle('active', idx < step));
+    }
+
+    // generic validate function for a single field id
+    function validateField(id) {
+      const el = document.getElementById(id);
+      if (!el) return true;
+      const val = el.value;
+      const ok = validators[id] ? validators[id](val) : true;
+      showError('err-' + id, ok ? '' : (el.getAttribute('data-err') || 'Invalid value'));
+      return ok;
+    }
+
+    // set custom data-err messages for some fields
+    document.getElementById('name').setAttribute('data-err','Please use letters and spaces only (2–100 chars).');
+    document.getElementById('age').setAttribute('data-err','Age must be 16–100.');
+    document.getElementById('email').setAttribute('data-err','Enter a valid email.');
+    document.getElementById('phone').setAttribute('data-err','Enter a valid 10-digit mobile (optional +91).');
+    document.getElementById('loan_amount').setAttribute('data-err','Amount between ₹1,000 and ₹5,000,000.');
+    document.getElementById('docs_score').setAttribute('data-err','Score between 0.00 and 1.00.');
+    document.getElementById('aadhar').setAttribute('data-err','Aadhaar must be 12 digits.');
+
+    // step validators
+    function isStepValid(step) {
+      if (step === 1) {
+        for (const id of step1Required) {
+          if (!validateField(id)) return false;
+        }
+        // also validate optional fields if present
+        return true;
+      } else if (step === 2) {
+        for (const id of step2Required) {
+          if (!validateField(id)) return false;
+        }
+        // validate aadhar pattern if provided
+        if (!validateField('aadhar')) return false;
+        if (!validateField('prev_loan_ids')) return false;
+        return true;
+      }
+      return true;
+    }
+
+    // enable/disable next buttons based on real-time validation
+    function refreshStepButtons() {
+      next1.disabled = !isStepValid(1);
+      next2.disabled = !isStepValid(2);
+    }
+
+    // add input listeners for important fields
+    const watchFields = ['name','age','semester','email','phone','loan_amount','prev_apps','docs_score','aadhar','prev_loan_ids'];
+    watchFields.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener('input', () => {
+        validateField(id);
+        refreshStepButtons();
+      });
+      el.addEventListener('blur', () => validateField(id));
+    });
+
+    // navigation buttons
+    next1.addEventListener('click', () => {
+      if (!isStepValid(1)) { refreshStepButtons(); return; }
+      step1El.classList.remove('active'); step2El.classList.add('active'); updateProgress(2);
+      window.scrollTo({top:0, behavior:'smooth'});
+      refreshStepButtons();
+    });
+    prev2.addEventListener('click', () => {
+      step2El.classList.remove('active'); step1El.classList.add('active'); updateProgress(1);
+      window.scrollTo({top:0, behavior:'smooth'});
+      refreshStepButtons();
+    });
+
+    next2.addEventListener('click', () => {
+      if (!isStepValid(2)) { refreshStepButtons(); return; }
+      step2El.classList.remove('active'); step3El.classList.add('active'); updateProgress(3);
+      window.scrollTo({top:0, behavior:'smooth'});
+    });
+    prev3.addEventListener('click', () => {
+      step3El.classList.remove('active'); step2El.classList.add('active'); updateProgress(2);
+      window.scrollTo({top:0, behavior:'smooth'});
+      refreshStepButtons();
+    });
+
+    // final validation on submit
+    document.getElementById('loanForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      // validate all required fields once more
+      let ok = true;
+      // step1 required
+      for (const id of step1Required) if (!validateField(id)) ok=false;
+      // step2 required
+      for (const id of step2Required) if (!validateField(id)) ok=false;
+      // other final checks
+      const extra = ['aadhar','ifsc','account_no'];
+      for (const id of extra) if (!validateField(id)) ok=false;
+      if (!ok) {
+        resultBox.style.display='block';
+        resultBox.style.background='#fff3f3';
+        resultBox.style.color='#7a1f1f';
+        resultBox.textContent = "Please fix the highlighted errors before submitting.";
+        return;
+      }
+
+      // gather data (you can send this to server via fetch)
+      const data = Object.fromEntries(new FormData(this).entries());
+      // show success (demo). Replace with actual fetch/post to backend as needed.
+      resultBox.style.display='block';
+      resultBox.style.background='#e6fff7';
+      resultBox.style.color='#026a3b';
+      resultBox.textContent = "✅ Application submitted (demo). Data validated locally.";
+
+      console.log('FORM DATA (demo):', data);
+      // optionally, reset form: this.reset();
+    });
+
+    // initial button state
+    refreshStepButtons();
+  </script>
+</body>
+</html>
